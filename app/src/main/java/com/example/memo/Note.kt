@@ -1,4 +1,3 @@
 package com.example.memo
 
-class Notes {
-}
+data class Note(var note_id: Int, var name: String, var folder_id: Int, var contents: Long)

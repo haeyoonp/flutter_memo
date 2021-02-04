@@ -7,18 +7,15 @@
     android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="200dp"
-        android:paddingBottom="70dp"
-        android:paddingLeft="50dp"
-        android:paddingRight="50dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
         android:layout_centerHorizontal="true"
         >
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="400dp"
             android:text="iCloud"
             android:textSize="40dp"
             tools:layout_editor_absoluteX="45dp"
