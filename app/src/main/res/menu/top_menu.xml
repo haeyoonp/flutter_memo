@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/top_menu" >
                 <item
-                    android:id="@+id/backToMain"
-                    android:icon="@drawable/ic_back_tomain"
-                    android:title="Back to Main"
+                    android:id="@+id/backToPrevious"
+                    android:icon="@drawable/ic_back"
+                    android:title="@string/back"
                     app:showAsAction="ifRoom" />
                 <item
                     android:id="@+id/showMore"
                     android:icon="@drawable/ic_show_more"
-                    android:title="Show More"
+                    android:title="@string/show_more"
                     app:showAsAction="ifRoom" />
 
 </menu>

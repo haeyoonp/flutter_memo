@@ -4,34 +4,38 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    android:gravity="center_vertical"
+    android:gravity="center_vertical|start"
     android:id="@+id/bottom_menu" >
-    <item
-        android:id="@+id/createFolder"
-        android:layout_gravity="left"
-        android:icon="@drawable/ic_create_folder"
-        android:title="Create Folder"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/saveNote"
-        android:icon="@drawable/ic_save_note"
-        android:title="Save Note"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/openCamera"
-        android:icon="@drawable/ic_open_camera"
-        android:title="Open Camera"
-        app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/usePen"
-        android:icon="@drawable/ic_use_pen"
-        android:title="Use Pen"
-        app:showAsAction="ifRoom" />
+    <group
+        android:id="@+id/create_folder_group" >
+        <item
+            android:id="@+id/createFolder"
+            android:layout_gravity="left"
+            android:icon="@drawable/ic_create_folder"
+            android:title="@string/create_folder"
+            app:showAsAction="always" />
+    </group>
+    <group
+        android:id="@+id/edit_note_group" >
+        <item
+            android:id="@+id/saveNote"
+            android:icon="@drawable/ic_save_note"
+            android:title="@string/save_note"
+            app:showAsAction="always" />
+        <item
+            android:id="@+id/openCamera"
+            android:icon="@drawable/ic_open_camera"
+            android:title="@string/open_camera"
+            app:showAsAction="always" />
+        <item
+            android:id="@+id/usePen"
+            android:icon="@drawable/ic_use_pen"
+            android:title="@string/use_pen"
+            app:showAsAction="always" />
+    </group>
     <item
         android:id="@+id/addNote"
         android:icon="@drawable/ic_add_note"
-        android:title="Add Note"
-        app:showAsAction="ifRoom" />
-
+        android:title="@string/add_note"
+        app:showAsAction="always" />
 </menu>

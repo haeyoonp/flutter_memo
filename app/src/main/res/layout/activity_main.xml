@@ -18,7 +18,7 @@
 
     <include layout="@layout/search_bar"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="110dp"
         />
 
     <include
@@ -27,11 +27,18 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
+    <include
+        layout="@layout/note_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/bottom_toolbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical|start" >
     </androidx.appcompat.widget.Toolbar>
 
 </LinearLayout>

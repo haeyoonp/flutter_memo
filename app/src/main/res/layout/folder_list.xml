@@ -4,23 +4,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    >
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="20dp"
-        android:layout_centerHorizontal="true"
-        >
+        android:text="@string/cloud"
+        android:textSize="28dp"/>
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:text="iCloud"
-            android:textSize="40dp"
-            tools:layout_editor_absoluteX="45dp"
-            tools:layout_editor_absoluteY="240dp" />
+    <ListView
+        android:id="@+id/folderList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
