@@ -7,15 +7,26 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
+private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
     private var mTopToolbar: Toolbar? = null
     private var mBottomToolbar: Toolbar? = null
+    internal lateinit var listener: NoticeDialogListener
+    val db = Firebase.firestore
     val LIST_MENU = arrayOf("LIST1", "LIST2", "LIST3")
+
+    interface NoticeDialogListener {
+        fun onDialogPositiveClick(dialog: CreateFolderFragment)
+        fun onDialogNegativeClick(dialog: CreateFolderFragment)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +65,10 @@ class MainActivity : AppCompatActivity() {
             true
         }
         R.id.createFolder -> {
-            // User chose the "Favorite" action, mark the current item
-            // as a favorite...
+            val createFolder = CreateFolderFragment()
+            createFolder.show(supportFragmentManager, "createFolder")
+
+
             true
         }
         R.id.openCamera -> {
