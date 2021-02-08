@@ -1,17 +1,21 @@
 package com.example.memo
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
+import android.view.View
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.ListView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+
 
 private const val TAG = "MainActivity"
 
@@ -21,7 +25,10 @@ class MainActivity : AppCompatActivity() {
     private var mBottomToolbar: Toolbar? = null
     internal lateinit var listener: NoticeDialogListener
     val db = Firebase.firestore
-    val LIST_MENU = arrayOf("LIST1", "LIST2", "LIST3")
+    val DATA_FOLDER: MutableMap<String,FolderModel> = mutableMapOf()
+    val LIST_FOLDER: MutableList<String> = mutableListOf()
+    val items = mutableListOf<ListViewItem>()
+
 
     interface NoticeDialogListener {
         fun onDialogPositiveClick(dialog: CreateFolderFragment)
@@ -32,6 +39,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val listview: ListView
+        val adapter: ListViewAdapter
+
+        // Adapter 생성
+        adapter = ListViewAdapter()
+
+        // 리스트뷰 참조 및 Adapter달기
+        listview = findViewById<View>(R.id.folderListView) as ListView
+        listview.adapter = adapter
+
         mTopToolbar = findViewById(R.id.top_toolbar)
         setSupportActionBar(mTopToolbar)
 
@@ -39,10 +56,40 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(mBottomToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, LIST_MENU)
+        db.collection("folders").get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        var folder = document.toObject(FolderModel::class.java)
+                        DATA_FOLDER.put(folder.folder_id, folder)
+                        LIST_FOLDER.add(folder.name)
+                        adapter.addItem(folder.folder_id, folder.name, folder.number_notes)
+                        Log.d(TAG, "${document.id} => ${document.data} , ${folder}  , ${folder.name}")
+                        Log.d(TAG, "${LIST_FOLDER}")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(TAG, "Error getting documents: ", exception)
+                }
 
-        val listview = findViewById(R.id.folderList) as ListView
-        listview.setAdapter(adapter)
+        listview.setOnItemClickListener(OnItemClickListener { parent, view, position, id -> })
+
+
+    }
+
+    private val mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            val listview = findViewById<View>(R.id.folderListView) as ListView
+            val adapter: ListViewAdapter
+            //listview.adapter = adapter
+            //runOnUiThread { listadaptor.notifyDataSetChanged() }
+        }
+    }
+
+    fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+
+        Log.d(TAG, "clicked id ${id}")
+
+        // Then you start a new Activity via Intent
 
     }
 
@@ -67,8 +114,6 @@ class MainActivity : AppCompatActivity() {
         R.id.createFolder -> {
             val createFolder = CreateFolderFragment()
             createFolder.show(supportFragmentManager, "createFolder")
-
-
             true
         }
         R.id.openCamera -> {
