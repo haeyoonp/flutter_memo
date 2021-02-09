@@ -19,8 +19,8 @@
             android:text="@string/cloud"
             android:textSize="24dp"/>
 
-        <ListView
-            android:id="@+id/folderListView"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

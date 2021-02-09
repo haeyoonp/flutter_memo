@@ -1,7 +1,5 @@
 package com.example.memo
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,10 +7,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
-import android.widget.AdapterView.OnItemClickListener
-import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -25,10 +23,10 @@ class MainActivity : AppCompatActivity() {
     private var mBottomToolbar: Toolbar? = null
     internal lateinit var listener: NoticeDialogListener
     val db = Firebase.firestore
-    //val DATA_FOLDER: MutableMap<String,FolderModel> = mutableMapOf()
-    //val LIST_FOLDER: MutableList<String> = mutableListOf()
-    val items = mutableListOf<folderListViewItem>()
-
+    /*
+    private val flowersListViewModel by viewModels<FlowersListViewModel> {
+        FlowersListViewModelFactory(this)
+    }*/
 
     interface NoticeDialogListener {
         fun onDialogPositiveClick(dialog: CreateFolderFragment)
@@ -39,15 +37,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val listview: ListView
-        val adapter: ListViewAdapter
+        val folderAdapter = FolderAdapter{ folder -> adapterOnClick(folder)}
+        val recyclerView: RecyclerView = findViewById(R.id.recycler_view)
+        val layoutManager: RecyclerView.LayoutManager
+        val folderList = folderList()
 
-        // Adapter 생성
-        adapter = ListViewAdapter()
+        layoutManager = LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
-        // 리스트뷰 참조 및 Adapter달기
-        listview = findViewById<View>(R.id.folderListView) as ListView
-        listview.adapter = adapter
+        recyclerView.adapter = folderAdapter
+        Log.d(TAG, "folderList : ${folderList}")
+        folderAdapter.submitList(folderList)
+
 
         mTopToolbar = findViewById(R.id.top_toolbar)
         setSupportActionBar(mTopToolbar)
@@ -56,30 +57,23 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(mBottomToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        db.collection("folders").get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        val folder = document.toObject(FolderModel::class.java)
-                        adapter.addItem(folder.folder_id, folder.name, folder.number_notes)
-                        Log.d(TAG, "${document.id} => ${document.data} , ${folder}  , ${folder.name}")
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
 
-        listview.setOnItemClickListener(OnItemClickListener { parent, view, position, id -> })
 
+        /*
+        flowersListViewModel.flowersLiveData.observe(this, {
+            it?.let {
+                folderAdapter.submitList(it as MutableList<Folder>)
+                //headerAdapter.updateFlowerCount(it.size)
+            }
+        })*/
 
     }
 
-    private val mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val listview = findViewById<View>(R.id.folderListView) as ListView
-            val adapter: ListViewAdapter
-            //listview.adapter = adapter
-            //runOnUiThread { listadaptor.notifyDataSetChanged() }
-        }
+    /* Opens FlowerDetailActivity when RecyclerView item is clicked. */
+    private fun adapterOnClick(folder: Folder) {
+        val intent = Intent(this, EditNoteActivity()::class.java)
+        //intent.putExtra(FLOWER_ID, flower.id)
+        startActivity(intent)
     }
 
     fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -122,4 +116,18 @@ class MainActivity : AppCompatActivity() {
             super.onOptionsItemSelected(item)
         }
     }
-}
+    /*
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intentData)
+
+        /* Inserts flower into viewModel. */
+        if (requestCode == newFlowerActivityRequestCode && resultCode == Activity.RESULT_OK) {
+            intentData?.let { data ->
+                val flowerName = data.getStringExtra(FLOWER_NAME)
+                val flowerDescription = data.getStringExtra(FLOWER_DESCRIPTION)
+
+                flowersListViewModel.insertFlower(flowerName, flowerDescription)
+            }
+        }*/
+
+    }
