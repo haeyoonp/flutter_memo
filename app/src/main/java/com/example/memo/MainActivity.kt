@@ -25,9 +25,9 @@ class MainActivity : AppCompatActivity() {
     private var mBottomToolbar: Toolbar? = null
     internal lateinit var listener: NoticeDialogListener
     val db = Firebase.firestore
-    val DATA_FOLDER: MutableMap<String,FolderModel> = mutableMapOf()
-    val LIST_FOLDER: MutableList<String> = mutableListOf()
-    val items = mutableListOf<ListViewItem>()
+    //val DATA_FOLDER: MutableMap<String,FolderModel> = mutableMapOf()
+    //val LIST_FOLDER: MutableList<String> = mutableListOf()
+    val items = mutableListOf<folderListViewItem>()
 
 
     interface NoticeDialogListener {
@@ -59,12 +59,9 @@ class MainActivity : AppCompatActivity() {
         db.collection("folders").get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
-                        var folder = document.toObject(FolderModel::class.java)
-                        DATA_FOLDER.put(folder.folder_id, folder)
-                        LIST_FOLDER.add(folder.name)
+                        val folder = document.toObject(FolderModel::class.java)
                         adapter.addItem(folder.folder_id, folder.name, folder.number_notes)
                         Log.d(TAG, "${document.id} => ${document.data} , ${folder}  , ${folder.name}")
-                        Log.d(TAG, "${LIST_FOLDER}")
                     }
                 }
                 .addOnFailureListener { exception ->
