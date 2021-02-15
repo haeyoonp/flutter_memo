@@ -6,13 +6,14 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker
 
 
 private const val TAG = "MainActivity"
@@ -24,10 +25,6 @@ class MainActivity : AppCompatActivity() {
     private var mBottomToolbar: Toolbar? = null
     internal lateinit var listener: NoticeDialogListener
     private val folderListViewModel = FolderListViewModel()
-    /*
-    private val flowersListViewModel by viewModels<FlowersListViewModel> {
-        FlowersListViewModelFactory(this)
-    }*/
 
     interface NoticeDialogListener {
         fun onDialogPositiveClick(dialog: CreateFolderFragment)
@@ -60,18 +57,28 @@ class MainActivity : AppCompatActivity() {
         })
 
         //folderListViewModel.foldersLiveData.observe(this, dataObserver)
-        recyclerView.invalidate()
-        recyclerView.getAdapter()?.notifyDataSetChanged()
+        //recyclerView.invalidate()
+        //recyclerView.getAdapter()?.notifyDataSetChanged()
 
 
     }
 
     /* Opens FlowerDetailActivity when RecyclerView item is clicked. */
     private fun adapterOnClick(folder: Folder) {
-        val intent = Intent(this, EditNoteActivity()::class.java)
+
+        val fragmentManager = getSupportFragmentManager()
+        val fragmentTransaction = fragmentManager.beginTransaction()
+
+        val fragment = NoteFragment()
+        fragmentTransaction.add(R.id.fragment_note, fragment)
+        //fragmentTransaction.replace(R.id.fragment_note, fragment)
+        fragmentTransaction.commit()
+        /*
+        val intent = Intent(this, NoteFragment()::class.java)
         intent.putExtra(FOLDER_ID, folder.name)
         Log.d(TAG, "adapterOnClick ${folder.name}")
         startActivity(intent)
+        */
     }
 
     fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

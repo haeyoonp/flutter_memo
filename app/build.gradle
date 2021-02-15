@@ -55,5 +55,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+    implementation "androidx.navigation:navigation-fragment-ktx:2.2.2"
+    implementation "androidx.fragment:fragment-ktx:1.2.5"
 
 }

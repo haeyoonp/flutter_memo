@@ -21,6 +21,12 @@
         android:layout_height="90dp"
         />
 
+    <androidx.fragment.app.FragmentContainerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <include
         layout="@layout/recycler_view"
         android:layout_width="match_parent"
