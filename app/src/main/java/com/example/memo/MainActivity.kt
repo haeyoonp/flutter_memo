@@ -9,20 +9,21 @@ import android.view.View
 import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 
 
 private const val TAG = "MainActivity"
+const val FOLDER_ID = "folder id"
 
 class MainActivity : AppCompatActivity() {
 
     private var mTopToolbar: Toolbar? = null
     private var mBottomToolbar: Toolbar? = null
     internal lateinit var listener: NoticeDialogListener
-    val db = Firebase.firestore
+    private val folderListViewModel = FolderListViewModel()
     /*
     private val flowersListViewModel by viewModels<FlowersListViewModel> {
         FlowersListViewModelFactory(this)
@@ -39,16 +40,10 @@ class MainActivity : AppCompatActivity() {
 
         val folderAdapter = FolderAdapter{ folder -> adapterOnClick(folder)}
         val recyclerView: RecyclerView = findViewById(R.id.recycler_view)
-        val layoutManager: RecyclerView.LayoutManager
-        val folderList = folderList()
+        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
 
-        layoutManager = LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
+        recyclerView.layoutManager = layoutManager
         recyclerView.adapter = folderAdapter
-        Log.d(TAG, "folderList : ${folderList}")
-        folderAdapter.submitList(folderList)
-
 
         mTopToolbar = findViewById(R.id.top_toolbar)
         setSupportActionBar(mTopToolbar)
@@ -57,22 +52,25 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(mBottomToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-
-
-        /*
-        flowersListViewModel.flowersLiveData.observe(this, {
+        folderListViewModel.getFolders().observe(this, Observer{
             it?.let {
-                folderAdapter.submitList(it as MutableList<Folder>)
-                //headerAdapter.updateFlowerCount(it.size)
+                Log.d(TAG, "folderListViewModel.getFolders() ")
+                folderAdapter.submitList(it as List<Folder>)
             }
-        })*/
+        })
+
+        //folderListViewModel.foldersLiveData.observe(this, dataObserver)
+        recyclerView.invalidate()
+        recyclerView.getAdapter()?.notifyDataSetChanged()
+
 
     }
 
     /* Opens FlowerDetailActivity when RecyclerView item is clicked. */
     private fun adapterOnClick(folder: Folder) {
         val intent = Intent(this, EditNoteActivity()::class.java)
-        //intent.putExtra(FLOWER_ID, flower.id)
+        intent.putExtra(FOLDER_ID, folder.name)
+        Log.d(TAG, "adapterOnClick ${folder.name}")
         startActivity(intent)
     }
 

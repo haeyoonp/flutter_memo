@@ -16,13 +16,7 @@
         android:background="@color/colorPrimary">
     </androidx.appcompat.widget.Toolbar>
 
-    <include layout="@layout/search_bar"
-        android:layout_width="match_parent"
-        android:layout_height="90dp"
-        />
-
-    <include
-        layout="@layout/recycler_view"
+    <com.google.android.material.textfield.TextInputEditText
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
@@ -31,8 +25,7 @@
         android:id="@+id/bottom_toolbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorPrimary"
-        android:gravity="center_vertical|start" >
+        android:background="@color/colorPrimary" >
     </androidx.appcompat.widget.Toolbar>
 
 </LinearLayout>
