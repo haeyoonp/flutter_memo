@@ -34,13 +34,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val fragmentManager = getSupportFragmentManager()
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        val fragment = FolderFragment()
 
-        val folderAdapter = FolderAdapter{ folder -> adapterOnClick(folder)}
-        val recyclerView: RecyclerView = findViewById(R.id.recycler_view)
-        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
-
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = folderAdapter
+        fragmentTransaction.add(R.id.fragment_placeholder, fragment)
+        fragmentTransaction.commit()
 
         mTopToolbar = findViewById(R.id.top_toolbar)
         setSupportActionBar(mTopToolbar)
@@ -49,29 +48,18 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(mBottomToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        folderListViewModel.getFolders().observe(this, Observer{
-            it?.let {
-                Log.d(TAG, "folderListViewModel.getFolders() ")
-                folderAdapter.submitList(it as List<Folder>)
-            }
-        })
-
-        //folderListViewModel.foldersLiveData.observe(this, dataObserver)
-        //recyclerView.invalidate()
-        //recyclerView.getAdapter()?.notifyDataSetChanged()
-
-
     }
 
-    /* Opens FlowerDetailActivity when RecyclerView item is clicked. */
     private fun adapterOnClick(folder: Folder) {
+
+        Log.d(TAG, "adapterOnClick ")
 
         val fragmentManager = getSupportFragmentManager()
         val fragmentTransaction = fragmentManager.beginTransaction()
 
         val fragment = NoteFragment()
-        fragmentTransaction.add(R.id.fragment_note, fragment)
-        //fragmentTransaction.replace(R.id.fragment_note, fragment)
+        fragmentTransaction.add(R.id.fragment_placeholder, fragment)
+        //fragmentTransaction.replace(R.id.recycler_view, fragment)
         fragmentTransaction.commit()
         /*
         val intent = Intent(this, NoteFragment()::class.java)

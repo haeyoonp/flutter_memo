@@ -18,27 +18,6 @@ class FolderAdapter(private val onClick: (Folder) -> Unit) :
         ListAdapter<Folder, FolderAdapter.FolderViewHolder>(FolderDiffCallback){
 
     var data = mutableListOf<Folder>()
-    val db = Firebase.firestore
-
-    init {
-        var folderList = mutableListOf<Folder>()
-        db.collection("folders").get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        val folder = document.toObject(Folder::class.java)
-                        folderList.add(folder)
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
-                .addOnCompleteListener {
-                    Log.d(TAG, "folderList : ${folderList}")
-                    Log.d(TAG, "FolderAdapter data : ${data}")
-                    data = folderList
-                }
-
-    }
 
     /* ViewHolder for displaying header. */
     class FolderViewHolder(itemView : View, val onClick: (Folder) -> Unit) :
@@ -78,7 +57,6 @@ class FolderAdapter(private val onClick: (Folder) -> Unit) :
 
     //ViewHolder에서 데이터 묶는 함수가 실행되는 곳
     override fun onBindViewHolder(holder: FolderViewHolder, position: Int) {
-        Log.d(TAG, "${position}")
         val folder = getItem(position)
         holder.bind(folder)
     }
@@ -86,19 +64,28 @@ class FolderAdapter(private val onClick: (Folder) -> Unit) :
     /* Returns number of items, since there is only one item in the header return one  */
     override fun getItemCount(): Int = data.size
 
-    fun updateFolderList(updatedFlowerCount: Int) {
-        //flowerCount = updatedFlowerCount
+    fun updateFolderList(list: MutableList<Folder>) {
+        Log.d(TAG, "updateFolderList $list")
+        this.data = list
         notifyDataSetChanged()
+    }
+
+    override fun submitList(list: MutableList<Folder>?) {
+        Log.d(TAG, "submitList $list")
+        this.data = ArrayList(list)
+        super.submitList(list?.let { ArrayList(it) })
     }
 
 }
 
 object FolderDiffCallback : DiffUtil.ItemCallback<Folder>() {
     override fun areItemsTheSame(oldItem: Folder, newItem: Folder): Boolean {
+        Log.d(TAG, "FolderDiffCallback areItemsTheSame")
         return oldItem == newItem
     }
 
     override fun areContentsTheSame(oldItem: Folder, newItem: Folder): Boolean {
+        Log.d(TAG, "FolderDiffCallback areContentsTheSame ")
         return oldItem.name == newItem.name
     }
 }

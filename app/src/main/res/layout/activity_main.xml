@@ -21,6 +21,14 @@
         android:layout_height="90dp"
         />
 
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/fragment_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!--
     <androidx.fragment.app.FragmentContainerView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fragment_note"
@@ -32,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
-
+    -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/bottom_toolbar"
         android:layout_width="match_parent"

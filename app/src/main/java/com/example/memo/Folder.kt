@@ -1,6 +1,5 @@
 package com.example.memo
 
-import android.content.res.Resources
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,7 +9,7 @@ import com.google.firebase.ktx.Firebase
 private const val TAG = "Folder"
 
 data class Folder (
-        //var id: String? = null,
+        var id: String? = null,
         var name: String? = null,
         var number_notes: Int? = null
 )
@@ -27,6 +26,7 @@ class FolderListViewModel() : ViewModel() {
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
                         val folder = document.toObject(Folder::class.java)
+                        folder.id = document.id
                         folderList.add(folder)
                     }
                 }
@@ -34,27 +34,25 @@ class FolderListViewModel() : ViewModel() {
                     Log.w(TAG, "Error getting documents: ", exception)
                 }
                 .addOnCompleteListener {
-                    Log.d(TAG, "folderList : ${folderList}")
-                    Log.d(TAG, "addOnCompleteListener foldersLiveData : ${foldersLiveData}")
-                    foldersLiveData.setValue(folderList)
+                    foldersLiveData.postValue(folderList)//setValue
                 }
 
     }
 
     fun getFolders(): MutableLiveData<List<Folder>> {
-        Log.d(TAG, "getFolders() : ${foldersLiveData}")
+        Log.d(TAG, "getFolders() : $foldersLiveData")
+
         return foldersLiveData
     }
 
-
-    /* If the name and description are present, create new Flower and add it to the datasource */
-    fun insertFlower(id: String?, folderName: String?, notesNumber: Int?) {
+    fun insertFolder(id: String?, folderName: String?, notesNumber: Int?) {
         if (folderName == null) {
             return
         }
 
         //val image = dataSource.getRandomFlowerImageAsset()
         val newFlower = Folder(
+                id,
                 folderName,
                 notesNumber
         )

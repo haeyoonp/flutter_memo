@@ -7,13 +7,13 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-private const val TAG = "Folder"
+private const val TAG = "Note"
 
 data class Note (
         var note_id: String? = null,
         var name: String? = null,
         var folder_id: String? = null,
-        var contents: Long? = null
+        var contents: String? = null
 )
 
 class NoteListViewModel() : ViewModel() {
@@ -43,13 +43,13 @@ class NoteListViewModel() : ViewModel() {
     }
 
     fun getNotes(): MutableLiveData<List<Note>> {
-        Log.d(TAG, "getNotes() : ${notesLiveData}")
+        Log.d(TAG, "getNotes() : $notesLiveData")
         return notesLiveData
     }
 
 
     /* If the name and description are present, create new Flower and add it to the datasource */
-    fun insertNote(note_id: String?, name: String?, folder_id: String?, contents: Long?) {
+    fun insertNote(note_id: String?, name: String?, folder_id: String?, contents: String?) {
         if (name == null) {
             return
         }
