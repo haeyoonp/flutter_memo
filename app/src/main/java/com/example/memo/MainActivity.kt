@@ -17,7 +17,6 @@ import com.google.android.material.datepicker.MaterialDatePicker.Builder.datePic
 
 
 private const val TAG = "MainActivity"
-const val FOLDER_ID = "folder id"
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +28,10 @@ class MainActivity : AppCompatActivity() {
     interface NoticeDialogListener {
         fun onDialogPositiveClick(dialog: CreateFolderFragment)
         fun onDialogNegativeClick(dialog: CreateFolderFragment)
+    }
+
+    interface OnDataPass {
+        fun passFolder(data: Folder)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

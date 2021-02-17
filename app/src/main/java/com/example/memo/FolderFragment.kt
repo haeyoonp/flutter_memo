@@ -1,11 +1,15 @@
 package com.example.memo
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,12 +20,7 @@ private const val TAG = "Folder Fragment"
 
 class FolderFragment : Fragment() {
 
-    private val folderListViewModel = FolderListViewModel()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+    private val folderListViewModel : FolderListViewModel by activityViewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -43,8 +42,6 @@ class FolderFragment : Fragment() {
 
         folderListViewModel.getFolders().observe(viewLifecycleOwner, Observer{
             it?.let {
-                Log.d(TAG, "folderListViewModel observe $it ")
-                //folderAdapter.updateFolderList(it as MutableList<Folder>)
                 folderAdapter.submitList(it as MutableList<Folder>)
             }
         })
@@ -55,21 +52,19 @@ class FolderFragment : Fragment() {
 
     private fun adapterOnClick(folder: Folder) {
 
-        Log.d(TAG, "adapterOnClick ")
-        /*
-        val fragmentManager = getSupportFragmentManager()
+        Log.d(TAG, "adapterOnClick $folder")
+
+        folderListViewModel.selectFolder(folder)
+
+        val fragmentManager = parentFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
 
         val fragment = NoteFragment()
-        fragmentTransaction.add(R.id.fragment_note, fragment)
-        //fragmentTransaction.replace(R.id.recycler_view, fragment)
+        //fragmentTransaction.add(R.id.fragment_placeholder, fragment)
+        fragmentTransaction.replace(R.id.fragment_placeholder, fragment)
+        //fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit()
 
-        val intent = Intent(this, NoteFragment()::class.java)
-        intent.putExtra(FOLDER_ID, folder.name)
-        Log.d(TAG, "adapterOnClick ${folder.name}")
-        startActivity(intent)
-        */
     }
 
 

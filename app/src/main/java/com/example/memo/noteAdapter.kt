@@ -18,34 +18,13 @@ class NoteAdapter(private val onClick: (Note) -> Unit) :
         ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallback){
 
     var data = mutableListOf<Note>()
-    val db = Firebase.firestore
-
-    init {
-        var noteList = mutableListOf<Note>()
-        db.collection("notes").get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        val note = document.toObject(Note::class.java)
-                        noteList.add(note)
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.w(TAG, "Error getting documents: ", exception)
-                }
-                .addOnCompleteListener {
-                    Log.d(TAG, "noteList : ${noteList}")
-                    Log.d(TAG, "NoteAdapter data : ${data}")
-                    data = noteList
-                }
-
-    }
 
     /* ViewHolder for displaying header. */
     class NoteViewHolder(itemView : View, val onClick: (Note) -> Unit) :
             RecyclerView.ViewHolder(itemView) {
         //private val flowerImageView: ImageView = itemView.findViewById(R.id.flower_image)
         private val  titleNoteTextView: TextView = itemView.findViewById(R.id.note_title)
-        private val  dateNoteTextView: TextView = itemView.findViewById(R.id.note_title)
+        private val  dateNoteTextView: TextView = itemView.findViewById(R.id.date)
         private val  contentNotesTextView: TextView = itemView.findViewById(R.id.note_content)
         private var currentNote: Note? = null
 
@@ -87,9 +66,12 @@ class NoteAdapter(private val onClick: (Note) -> Unit) :
     /* Returns number of items, since there is only one item in the header return one  */
     override fun getItemCount(): Int = data.size
 
-    fun updateNoteList(updatedFlowerCount: Int) {
-        //flowerCount = updatedFlowerCount
+
+    override fun submitList(list: MutableList<Note>?) {
+        Log.d(TAG, "submitList $list")
+        this.data = ArrayList(list)
         notifyDataSetChanged()
+        super.submitList(list?.let { ArrayList(it) })
     }
 
 }

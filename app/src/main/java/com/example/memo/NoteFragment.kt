@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,12 +18,7 @@ private const val TAG = "Note Fragment"
 class NoteFragment : Fragment() {
 
     private val noteListViewModel = NoteListViewModel()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // Use the Kotlin extension in the fragment-ktx artifact
-
-    }
+    private val folderListViewModel : FolderListViewModel by activityViewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -35,21 +31,25 @@ class NoteFragment : Fragment() {
         val view = inflater.inflate(R.layout.recycler_view, container, false)
         val noteAdapter = NoteAdapter{ note -> adapterOnClick(note)}
         val recyclerView: RecyclerView =  view.findViewById(R.id.recycler_view)
-        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this.context)
+        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
 
-        if (recyclerView.getParent() != null) (recyclerView.getParent() as ViewGroup).removeView(recyclerView)
-
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        recyclerView.layoutManager = layoutManager
         recyclerView.adapter = noteAdapter
+
+        folderListViewModel.selectedFolder.observe(viewLifecycleOwner, Observer { item ->
+            // Update the selected filters UI
+            Log.d(TAG, "folderListViewModel selectedFolder ${item} ${item.id}")
+            noteListViewModel.filterNotes(item.id)
+        })
 
         noteListViewModel.getNotes().observe(viewLifecycleOwner, Observer{
             it?.let {
-                Log.d(TAG, "noteListViewModel.getFolders() ")
-                noteAdapter.submitList(it as List<Note>)
+                Log.d(TAG, "noteListViewModel.getNotes() ")
+                noteAdapter.submitList(it as MutableList<Note>)
             }
         })
 
-        return view//recyclerView
+        return view
 
     }
 

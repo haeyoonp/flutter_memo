@@ -30,7 +30,7 @@ class FolderAdapter(private val onClick: (Folder) -> Unit) :
         init {
             itemView.setOnClickListener {
                 currentFolder?.let {
-                    Log.d(TAG, "onClick ")
+
                     val pos = adapterPosition
                     if (pos != RecyclerView.NO_POSITION) {
                         // TODO : use pos.
@@ -73,6 +73,7 @@ class FolderAdapter(private val onClick: (Folder) -> Unit) :
     override fun submitList(list: MutableList<Folder>?) {
         Log.d(TAG, "submitList $list")
         this.data = ArrayList(list)
+        notifyDataSetChanged()
         super.submitList(list?.let { ArrayList(it) })
     }
 
