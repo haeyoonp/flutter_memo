@@ -8,8 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
 
 
 private const val TAG = "NoteAdapter"
@@ -43,8 +42,11 @@ class NoteAdapter(private val onClick: (Note) -> Unit) :
         }
 
         fun bind(note: Note) {
+            val formatter = SimpleDateFormat("yyyy.dd.MM") //formating according to my need
+            val date: String = formatter.format(note.last_edit)
             currentNote = note
             titleNoteTextView.text = note.name
+            dateNoteTextView.text = date
             contentNotesTextView.text = note.contents.toString()
         }
 
@@ -68,7 +70,6 @@ class NoteAdapter(private val onClick: (Note) -> Unit) :
 
 
     override fun submitList(list: MutableList<Note>?) {
-        Log.d(TAG, "submitList $list")
         this.data = ArrayList(list)
         notifyDataSetChanged()
         super.submitList(list?.let { ArrayList(it) })

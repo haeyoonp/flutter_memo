@@ -55,14 +55,8 @@ class NoteFragment : Fragment() {
 
     private fun adapterOnClick(note: Note) {
 
-        Log.d(TAG, "adapterOnClick clicked id ${id}")
-        /*
-        val intent = Intent(this, NoteFragment()::class.java)
-        intent.putExtra(FOLDER_ID, folder.name)
-        Log.d(TAG, "adapterOnClick ${folder.name}")
-        startActivity(intent)
-        */
+        Log.d(TAG, "adapterOnClick clicked id ${note.note_id}")
+        (activity as MainActivity?)?.openEditNoteActivity(note.note_id)
     }
-
 
 }

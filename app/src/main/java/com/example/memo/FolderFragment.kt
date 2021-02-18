@@ -1,19 +1,21 @@
 package com.example.memo
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.QuerySnapshot
 
 
 private const val TAG = "Folder Fragment"
@@ -35,6 +37,7 @@ class FolderFragment : Fragment() {
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view)
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
 
+
         //if (recyclerView.getParent() != null) (recyclerView.getParent() as ViewGroup).removeView(recyclerView)
 
         recyclerView.layoutManager = layoutManager
@@ -42,30 +45,22 @@ class FolderFragment : Fragment() {
 
         folderListViewModel.getFolders().observe(viewLifecycleOwner, Observer{
             it?.let {
+                Log.d(TAG, "folderListViewModel.getFolders().observe ")
                 folderAdapter.submitList(it as MutableList<Folder>)
+
             }
         })
 
-        return view//recyclerView
+        return view
 
     }
 
     private fun adapterOnClick(folder: Folder) {
 
         Log.d(TAG, "adapterOnClick $folder")
-
-        folderListViewModel.selectFolder(folder)
-
-        val fragmentManager = parentFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-
         val fragment = NoteFragment()
-        //fragmentTransaction.add(R.id.fragment_placeholder, fragment)
-        fragmentTransaction.replace(R.id.fragment_placeholder, fragment)
-        //fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit()
-
+        folderListViewModel.selectFolder(folder)
+        (activity as MainActivity?)?.startFragment(fragment)
     }
-
 
 }

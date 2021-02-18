@@ -23,7 +23,7 @@
             android:name=".EditNoteActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:launchMode="singleInstance" >
+            android:launchMode="singleTop" >
          </activity>
 
 

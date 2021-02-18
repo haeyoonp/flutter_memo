@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_main.*
@@ -15,6 +16,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 private const val TAG = "CreateFolderFragment"
 
 class CreateFolderFragment : DialogFragment() {
+
+    private val folderListViewModel : FolderListViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
@@ -36,15 +39,7 @@ class CreateFolderFragment : DialogFragment() {
                         val name = (dialogView.findViewById(R.id.folderName) as EditText).text.toString()
                         //print name and put it in DB !
                         Log.i(TAG, "name of folder $name")
-                        val folder = hashMapOf("name" to name, "number_notes" to 0)
-                        db.collection("folders")
-                                .add(folder)
-                                .addOnSuccessListener { documentReference ->
-                                    Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
-                                }
-                                .addOnFailureListener { e ->
-                                    Log.w(TAG, "Error adding document", e)
-                                }
+                        folderListViewModel.insertFolder(name, 0)
                     })
                 .setNegativeButton(R.string.cancel,
                     DialogInterface.OnClickListener { dialog, id ->

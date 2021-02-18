@@ -20,9 +20,16 @@ data class Note (
 
 class NoteListViewModel() : ViewModel() {
 
-    val db = Firebase.firestore
+    private val NOTE_REF = Firebase.firestore.collection("notes")
+    /*
+    private val foldersLiveData : MutableLiveData<List<Folder>> by lazy {
+        MutableLiveData<List<Folder>>().also {
+            loadFolders()
+        }
+    }//= MutableLiveData<List<Folder>>()*/
 
     private var notesLiveData : MutableLiveData<List<Note>> = MutableLiveData<List<Note>>()
+    val selectedNote = MutableLiveData<Note>()
 
     fun getNotes(): MutableLiveData<List<Note>> {
         return notesLiveData
@@ -30,7 +37,7 @@ class NoteListViewModel() : ViewModel() {
 
     fun filterNotes(folder_id: String?): MutableLiveData<List<Note>> {
         var noteList = mutableListOf<Note>()
-        db.collection("notes").whereEqualTo("folder_id", folder_id).get()
+        NOTE_REF.whereEqualTo("folder_id", folder_id).get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
                         val note = document.toObject(Note::class.java)
@@ -47,18 +54,29 @@ class NoteListViewModel() : ViewModel() {
         return notesLiveData
     }
 
+    fun selectNote(item: Note) {
+        selectedNote.postValue(item)
+    }
+
     fun insertNote(note_id: String?, name: String?, folder_id: String?, contents: String?) {
-        if (name == null) {
+        Log.d(TAG, "insertNote $folder_id")
+        if (folder_id == null) {
             return
         }
 
-        //val image = dataSource.getRandomFlowerImageAsset()
-        val newFolder = Note(
-                note_id,
-                name,
-                folder_id,
-                contents
+        val newNote = hashMapOf(
+                "name" to name,
+                "folder_id" to folder_id,
+                "contents" to contents
         )
+        NOTE_REF
+                .add(newNote)
+                .addOnSuccessListener { documentReference ->
+                    Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
+                }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "Error adding document", e)
+                }
 
     }
 }
