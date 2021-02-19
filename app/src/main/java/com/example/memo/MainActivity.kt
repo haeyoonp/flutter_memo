@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.database.DataSnapshot
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     internal lateinit var listener: NoticeDialogListener
     private val folderListViewModel = FolderListViewModel()
     private val noteListViewModel = NoteListViewModel()
+    var currentFolder: String? = "default"
     private val fragmentManager: FragmentManager = supportFragmentManager
 
     interface NoticeDialogListener {
@@ -64,7 +66,9 @@ class MainActivity : AppCompatActivity() {
             true
         }
         R.id.addNote -> {
-            openEditNoteActivity("")
+            val note : Note = Note()
+            note.folder_id = currentFolder
+            openEditNoteActivity(note)
             true
         }
         R.id.createFolder -> {
@@ -83,6 +87,7 @@ class MainActivity : AppCompatActivity() {
     }
 
      fun startFragment(fragment: Fragment) {
+         Log.i(TAG, "startFragment")
         val transaction: FragmentTransaction = fragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_placeholder, fragment)
         transaction.addToBackStack(null);
@@ -106,14 +111,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun openEditNoteActivity(note_id:String?) {
-        Log.d(TAG, "openEditNoteActivity")
-        //case of new note - empty selected note
+    fun openEditNoteActivity(note:Note?) {
 
-        //case of existing note - assign selected note
+        val folder_id = note?.folder_id
+        val note_id = note?.note_id
 
-
+        Log.d(TAG, "openEditNoteActivity ${folder_id} , ${note_id} ")
         val intent = Intent(this, EditNoteActivity::class.java)
+        intent.putExtra("selectedFolder", folder_id);
+        intent.putExtra("selectedNote", note_id);
         this.startActivity(intent)
     }
 

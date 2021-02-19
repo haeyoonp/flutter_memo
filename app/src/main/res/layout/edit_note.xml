@@ -16,6 +16,12 @@
         android:background="@color/colorPrimary">
     </androidx.appcompat.widget.Toolbar>
 
+    <TextView
+        android:id="@+id/current_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"/>
+
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/note_content"
         android:layout_width="match_parent"

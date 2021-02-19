@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 private const val TAG = "NoteAdapter"
@@ -47,7 +49,8 @@ class NoteAdapter(private val onClick: (Note) -> Unit) :
             currentNote = note
             titleNoteTextView.text = note.name
             dateNoteTextView.text = date
-            contentNotesTextView.text = note.contents.toString()
+            var showContents = note.contents?.split("\n")?.get(0)
+            contentNotesTextView.text = showContents
         }
 
     }

@@ -5,12 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.observe
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import java.text.DateFormat
+import androidx.lifecycle.Observer
+import java.util.*
 
 
 private const val TAG = "EditNoteActivity"
@@ -20,11 +22,25 @@ class EditNoteActivity : AppCompatActivity() {
 
     private var mTopToolbar: Toolbar? = null
     private var mBottomToolbar: Toolbar? = null
-    val db = Firebase.firestore
+    private val noteListViewModel = NoteListViewModel()
+    private var currentNote: Note? = Note()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edit_note)
+        val bundle = intent.extras
+        val selectedFolder = bundle!!.getString("selectedFolder")
+        val selectedNote = bundle!!.getString("selectedNote")
+
+        noteListViewModel.selectNote(Note(selectedNote,null,selectedFolder,null,null))
+        Log.d(TAG, "noteListViewModel.selectNote $selectedFolder $selectedNote")
+
+
+        noteListViewModel.selectedNote.observe(this, Observer { item ->
+            Log.d(TAG, "noteListViewModel selectedNote observe ${item}")
+            getNote(item)
+            currentNote = item
+        })
 
         mTopToolbar = findViewById(R.id.top_toolbar)
         setSupportActionBar(mTopToolbar)
@@ -32,6 +48,9 @@ class EditNoteActivity : AppCompatActivity() {
         mBottomToolbar = findViewById(R.id.bottom_toolbar)
         setSupportActionBar(mBottomToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        //getNote()
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -50,23 +69,19 @@ class EditNoteActivity : AppCompatActivity() {
         }
         R.id.backToPrevious -> {
             Log.d(TAG, "backToPrevious ")
-            saveNotes()
+            saveNote()
             finish()
             true
         }
         R.id.saveNote -> {
-            saveNotes()
+            saveNote()
             finish()
             true
         }
         R.id.openCamera -> {
-            // User chose the "Favorite" action, mark the current item
-            // as a favorite...
             true
         }
         R.id.usePen -> {
-            // User chose the "Favorite" action, mark the current item
-            // as a favorite...
             true
         }
         else -> {
@@ -74,21 +89,25 @@ class EditNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveNotes(){
-        val textInputLayout = findViewById<TextInputEditText>(R.id.note_content)
-        val text: String = textInputLayout.text.toString()
-        Log.d(TAG, "saveNote $text")
-        /*
-        * Log.d(TAG, "saveNote ")
-            val note = hashMapOf("name" to "title", "folder_id" to 0, "contents" to "hello")//note_id
-            db.collection("notes")
-                .add(note)
-                .addOnSuccessListener { documentReference ->
-                    Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
-                }
-                .addOnFailureListener { e ->
-                    Log.w(TAG, "Error adding document", e)
-                }*/
+    private fun getNote(note: Note){
+        val currentDateTimeString = DateFormat.getDateTimeInstance().format(Date())
+        val dateView : TextView = findViewById(R.id.current_date)
+        val contentView : TextInputEditText = findViewById(R.id.note_content)
+        dateView.setText(currentDateTimeString)
+        contentView.setText(note.contents)
+    }
+
+    private fun saveNote(){
+        val currentDateTimeString = Date()//DateFormat.getDateTimeInstance().format(Date())
+        val content : String = findViewById<TextView>(R.id.note_content).text.toString()
+        currentNote?.contents = content
+        currentNote?.name = content.split("\\s+".toRegex())[0]
+        currentNote?.last_edit = currentDateTimeString
+        Log.d(TAG, "saveNote ${currentNote}")
+
+        noteListViewModel.saveNote(currentNote)
+
+
     }
 
 }

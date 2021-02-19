@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
 import java.util.Date
 
 private const val TAG = "Note"
@@ -21,15 +22,22 @@ data class Note (
 class NoteListViewModel() : ViewModel() {
 
     private val NOTE_REF = Firebase.firestore.collection("notes")
-    /*
-    private val foldersLiveData : MutableLiveData<List<Folder>> by lazy {
-        MutableLiveData<List<Folder>>().also {
-            loadFolders()
-        }
-    }//= MutableLiveData<List<Folder>>()*/
-
     private var notesLiveData : MutableLiveData<List<Note>> = MutableLiveData<List<Note>>()
-    val selectedNote = MutableLiveData<Note>()
+    val selectedNote : MutableLiveData<Note> = MutableLiveData<Note>()//Note()
+
+
+    init{
+        NOTE_REF.addSnapshotListener{ snapshot, e ->
+            Log.d(TAG, "NOTE_REF.addSnapshotListener")
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+            if (snapshot != null) {
+                getNotes()
+            }
+        }
+    }
 
     fun getNotes(): MutableLiveData<List<Note>> {
         return notesLiveData
@@ -54,29 +62,65 @@ class NoteListViewModel() : ViewModel() {
         return notesLiveData
     }
 
-    fun selectNote(item: Note) {
-        selectedNote.postValue(item)
+    fun selectNote(note: Note) {
+
+        var findNote : Note = Note()
+        if(note.note_id == null){
+            Log.d(TAG, "if(note.note_id == null)")
+            if(note.folder_id == null){
+                Log.d(TAG, "note.folder_id == null")
+                findNote.folder_id = "default"
+            }else{
+                Log.d(TAG, "else folder_id")
+                findNote.folder_id = note.folder_id
+            }
+            selectedNote.setValue(findNote)
+        }else{
+            note.note_id?.let { NOTE_REF.document(it).get()
+                    .addOnSuccessListener { document ->
+                        findNote = document.toObject(Note::class.java)!!
+                        findNote.note_id = note.note_id
+                    }
+                    .addOnCompleteListener {
+                        selectedNote.setValue(findNote)
+                    }
+            }
+        }
     }
 
-    fun insertNote(note_id: String?, name: String?, folder_id: String?, contents: String?) {
-        Log.d(TAG, "insertNote $folder_id")
-        if (folder_id == null) {
-            return
+    fun saveNote(note: Note?) {
+        Log.d(TAG, "saveNote $note")
+
+        var newNote : Note? = note
+        if (newNote != null) {
+            newNote.folder_id = newNote.folder_id?: "default"
+            Log.d(TAG, "saveNote ${newNote.folder_id} ")
+            /*
+            if (newNote.folder_id == null) {
+                newNote.folder_id = "default"
+            }*/
+            newNote.note_id?.let { NOTE_REF.document(it).get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            //NOTE_REF.document(it).set(newNote)
+                            Log.d(TAG, "DocumentSnapshot data: ${newNote}")
+                        } else {
+                            Log.d(TAG, "No such document")
+                        }
+                        NOTE_REF.document(it).set(newNote)
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.d(TAG, "get failed with ", exception)
+                    }
+            }?:{
+                Log.d(TAG, "NOTE_REF.add(newNote) $newNote")
+                NOTE_REF.add(newNote)
+            }()
         }
 
-        val newNote = hashMapOf(
-                "name" to name,
-                "folder_id" to folder_id,
-                "contents" to contents
-        )
-        NOTE_REF
-                .add(newNote)
-                .addOnSuccessListener { documentReference ->
-                    Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
-                }
-                .addOnFailureListener { e ->
-                    Log.w(TAG, "Error adding document", e)
-                }
-
     }
+
+    //deleteNote(note_id: String?){}
+    //deleteNotes(folder_id: String?){}
+
 }

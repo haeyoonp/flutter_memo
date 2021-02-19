@@ -66,6 +66,7 @@ class FolderListViewModel : ViewModel() {
     }
 
     fun selectFolder(item: Folder) {
+
         selectedFolder.postValue(item)
     }
 
@@ -83,6 +84,12 @@ class FolderListViewModel : ViewModel() {
                 .addOnFailureListener { e ->
                     Log.w(TAG, "Error adding document", e)
                 }
+    }
+
+    fun deleteFolder(folder_id: String?) {
+        Log.d(TAG, "deleteFolder $folder_id")
+        //deleteNotes()
+        //deleteFolder()
 
     }
 

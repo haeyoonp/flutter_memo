@@ -39,6 +39,7 @@ class NoteFragment : Fragment() {
         folderListViewModel.selectedFolder.observe(viewLifecycleOwner, Observer { item ->
             // Update the selected filters UI
             Log.d(TAG, "folderListViewModel selectedFolder ${item} ${item.id}")
+            (activity as MainActivity?)?.currentFolder = item.id
             noteListViewModel.filterNotes(item.id)
         })
 
@@ -55,8 +56,11 @@ class NoteFragment : Fragment() {
 
     private fun adapterOnClick(note: Note) {
 
-        Log.d(TAG, "adapterOnClick clicked id ${note.note_id}")
-        (activity as MainActivity?)?.openEditNoteActivity(note.note_id)
+        Log.d(TAG, "adapterOnClick ${note.note_id}")
+        //noteListViewModel.selectNote(note)
+        (activity as MainActivity?)?.openEditNoteActivity(note)
     }
+
+
 
 }
