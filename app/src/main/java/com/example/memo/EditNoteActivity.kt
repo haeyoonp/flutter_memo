@@ -8,10 +8,11 @@ import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.observe
 import com.google.android.material.textfield.TextInputEditText
 import java.text.DateFormat
 import androidx.lifecycle.Observer
+import com.example.memo.model.Note
+import com.example.memo.model.NoteListViewModel
 import java.util.*
 
 
@@ -23,7 +24,8 @@ class EditNoteActivity : AppCompatActivity() {
     private var mTopToolbar: Toolbar? = null
     private var mBottomToolbar: Toolbar? = null
     private val noteListViewModel = NoteListViewModel()
-    private var currentNote: Note? = Note()
+    private var currentNote: Note? =
+        Note()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,12 +34,21 @@ class EditNoteActivity : AppCompatActivity() {
         val selectedFolder = bundle!!.getString("selectedFolder")
         val selectedNote = bundle!!.getString("selectedNote")
 
-        noteListViewModel.selectNote(Note(selectedNote,null,selectedFolder,null,null))
+        noteListViewModel.selectNote(
+            Note(
+                selectedNote,
+                null,
+                selectedFolder,
+                null,
+                null
+            )
+        )
         Log.d(TAG, "noteListViewModel.selectNote $selectedFolder $selectedNote")
 
+        val s = (this.application as MyApplication).currentFolder
+        Log.d(TAG, "this.application as MyApplication $s")
 
         noteListViewModel.selectedNote.observe(this, Observer { item ->
-            Log.d(TAG, "noteListViewModel selectedNote observe ${item}")
             getNote(item)
             currentNote = item
         })
@@ -48,8 +59,6 @@ class EditNoteActivity : AppCompatActivity() {
         mBottomToolbar = findViewById(R.id.bottom_toolbar)
         setSupportActionBar(mBottomToolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-
-        //getNote()
 
     }
 

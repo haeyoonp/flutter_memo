@@ -1,33 +1,48 @@
-package com.example.memo
+package com.example.memo.model
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import androidx.lifecycle.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.example.memo.AppRepository
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 
 private const val TAG = "Folder"
 
-data class Folder (
+@Entity//(tableName = "folder")
+data class Folder(
+    @PrimaryKey(autoGenerate = true) val uid: Int?,
+    @ColumnInfo(name = "folder_name") val folderName: String?,
+    @ColumnInfo(name = "number_notes") val numberNotes: Int?
+)
+
+
+
+data class FolderA (
         var id: String? = null,
         var name: String? = null,
         var number_notes: Int? = null
 )
 
-class FolderListViewModel : ViewModel() {
+class FolderListViewModel(private val repository: AppRepository) : ViewModel() {
 
     private val FOLDER_REF = Firebase.firestore.collection("folders")
-    private val foldersLiveData : MutableLiveData<List<Folder>> by lazy {
+    val foldersLiveData : LiveData<List<Folder>> = repository.allFolders.asLiveData()/*by lazy {
         MutableLiveData<List<Folder>>().also {
-            loadFolders()
+            //loadFolders()
         }
-    }//= MutableLiveData<List<Folder>>()
+    }//= MutableLiveData<List<Folder>>()*/
+
     val selectedFolder = MutableLiveData<Folder>()
+
+    fun insert(folder: Folder) = viewModelScope.launch {
+        Log.d(TAG, "insert $folder")
+        repository.insert(folder)
+    }
 
     init{
         FOLDER_REF.addSnapshotListener{ snapshot, e ->
@@ -37,15 +52,15 @@ class FolderListViewModel : ViewModel() {
                 return@addSnapshotListener
             }
             if (snapshot != null) {
-                loadFolders()
+                //loadFolders()
             }
         }
     }
 
-    fun getFolders(): MutableLiveData<List<Folder>> {
+    fun getFolders(): LiveData<List<Folder>> {
         return foldersLiveData
     }
-
+    /*
     private fun loadFolders() {
         var folderList = mutableListOf<Folder>()
 
@@ -53,7 +68,7 @@ class FolderListViewModel : ViewModel() {
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
                         val folder = document.toObject(Folder::class.java)
-                        folder.id = document.id
+                        //folder.uid = document.id
                         folderList.add(folder)
                     }
                 }
@@ -64,12 +79,12 @@ class FolderListViewModel : ViewModel() {
                     foldersLiveData.setValue(folderList)//setValue
                 }
     }
-
+    */
     fun selectFolder(item: Folder) {
 
         selectedFolder.postValue(item)
     }
-
+    /*
     fun insertFolder(folderName: String?, notesNumber: Int?) {
         Log.d(TAG, "insertFolder $folderName")
         if (folderName == null) {
@@ -84,7 +99,7 @@ class FolderListViewModel : ViewModel() {
                 .addOnFailureListener { e ->
                     Log.w(TAG, "Error adding document", e)
                 }
-    }
+    }*/
 
     fun deleteFolder(folder_id: String?) {
         Log.d(TAG, "deleteFolder $folder_id")
@@ -93,4 +108,15 @@ class FolderListViewModel : ViewModel() {
 
     }
 
+}
+
+class FolderViewModelFactory(private val repository: AppRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        Log.d(TAG, "FolderViewModelFactory")
+        if (modelClass.isAssignableFrom(FolderListViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return FolderListViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

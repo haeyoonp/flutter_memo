@@ -10,7 +10,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.example.memo.model.FolderListViewModel
+import com.example.memo.model.Note
+import com.example.memo.model.NoteListViewModel
+import com.example.memo.utils.NoteAdapter
 
 
 private const val TAG = "Note Fragment"
@@ -26,10 +29,9 @@ class NoteFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
 
-        Log.d(TAG, "onCreateView")
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.recycler_view, container, false)
-        val noteAdapter = NoteAdapter{ note -> adapterOnClick(note)}
+        val noteAdapter =
+            NoteAdapter { note -> adapterOnClick(note) }
         val recyclerView: RecyclerView =  view.findViewById(R.id.recycler_view)
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(activity)
 
@@ -37,10 +39,10 @@ class NoteFragment : Fragment() {
         recyclerView.adapter = noteAdapter
 
         folderListViewModel.selectedFolder.observe(viewLifecycleOwner, Observer { item ->
-            // Update the selected filters UI
-            Log.d(TAG, "folderListViewModel selectedFolder ${item} ${item.id}")
-            (activity as MainActivity?)?.currentFolder = item.id
-            noteListViewModel.filterNotes(item.id)
+            Log.d(TAG, "folderListViewModel selectedFolder ${item} ${item.uid}")
+            //(activity as MainActivity?)?.currentFolder = item.id
+            (requireActivity().application as MyApplication).currentFolder = item.folderName
+            //noteListViewModel.filterNotes(item.uid)
         })
 
         noteListViewModel.getNotes().observe(viewLifecycleOwner, Observer{
@@ -49,9 +51,7 @@ class NoteFragment : Fragment() {
                 noteAdapter.submitList(it as MutableList<Note>)
             }
         })
-
         return view
-
     }
 
     private fun adapterOnClick(note: Note) {

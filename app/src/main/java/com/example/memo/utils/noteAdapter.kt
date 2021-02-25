@@ -1,4 +1,4 @@
-package com.example.memo
+package com.example.memo.utils
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,15 +8,18 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.memo.R
+import com.example.memo.model.Note
 import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 
 private const val TAG = "NoteAdapter"
 
 class NoteAdapter(private val onClick: (Note) -> Unit) :
-        ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffCallback){
+        ListAdapter<Note, NoteAdapter.NoteViewHolder>(
+            NoteDiffCallback
+        ){
 
     var data = mutableListOf<Note>()
 

@@ -1,20 +1,22 @@
 package com.example.memo
 
+import android.app.Application
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import com.google.firebase.database.DataSnapshot
+import androidx.room.Room
+import com.example.memo.model.FolderListViewModel
+import com.example.memo.model.FolderViewModelFactory
+import com.example.memo.model.Note
+import com.example.memo.model.NoteListViewModel
 
 
 private const val TAG = "MainActivity"
@@ -24,9 +26,10 @@ class MainActivity : AppCompatActivity() {
     private var mTopToolbar: Toolbar? = null
     private var mBottomToolbar: Toolbar? = null
     internal lateinit var listener: NoticeDialogListener
-    private val folderListViewModel = FolderListViewModel()
+    val folderListViewModel : FolderListViewModel by viewModels {
+        FolderViewModelFactory((application as MyApplication).repository)
+    }
     private val noteListViewModel = NoteListViewModel()
-    var currentFolder: String? = "default"
     private val fragmentManager: FragmentManager = supportFragmentManager
 
     interface NoticeDialogListener {
@@ -66,7 +69,9 @@ class MainActivity : AppCompatActivity() {
             true
         }
         R.id.addNote -> {
-            val note : Note = Note()
+            val note : Note =
+                Note()
+            var currentFolder = (this.application as MyApplication).currentFolder
             note.folder_id = currentFolder
             openEditNoteActivity(note)
             true
@@ -111,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun openEditNoteActivity(note:Note?) {
+    fun openEditNoteActivity(note: Note?) {
 
         val folder_id = note?.folder_id
         val note_id = note?.note_id

@@ -1,4 +1,4 @@
-package com.example.memo
+package com.example.memo.utils
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,14 +8,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.example.memo.R
+import com.example.memo.model.Folder
 
 
 private const val TAG = "folderAdapter"
 
 class FolderAdapter(private val onClick: (Folder) -> Unit) :
-        ListAdapter<Folder, FolderAdapter.FolderViewHolder>(FolderDiffCallback){
+        ListAdapter<Folder, FolderAdapter.FolderViewHolder>(
+            FolderDiffCallback
+        ){
 
     var data = mutableListOf<Folder>()
 
@@ -43,8 +45,8 @@ class FolderAdapter(private val onClick: (Folder) -> Unit) :
 
         fun bind(folder: Folder) {
             currentFolder = folder
-            nameFolderTextView.text = folder.name
-            numberNotesTextView.text = folder.number_notes.toString()
+            nameFolderTextView.text = folder.folderName
+            numberNotesTextView.text = folder.numberNotes.toString()
         }
 
     }
@@ -52,7 +54,10 @@ class FolderAdapter(private val onClick: (Folder) -> Unit) :
     /* Inflates view and returns HeaderViewHolder. */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FolderViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.folder_list, parent, false)
-        return FolderViewHolder(view, onClick)
+        return FolderViewHolder(
+            view,
+            onClick
+        )
     }
 
     //ViewHolder에서 데이터 묶는 함수가 실행되는 곳
@@ -87,6 +92,6 @@ object FolderDiffCallback : DiffUtil.ItemCallback<Folder>() {
 
     override fun areContentsTheSame(oldItem: Folder, newItem: Folder): Boolean {
         Log.d(TAG, "FolderDiffCallback areContentsTheSame ")
-        return oldItem.name == newItem.name
+        return oldItem.folderName == newItem.folderName
     }
 }

@@ -1,15 +1,26 @@
-package com.example.memo
+package com.example.memo.model
 
-import android.content.res.Resources
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.text.SimpleDateFormat
 import java.util.Date
 
 private const val TAG = "Note"
+
+@Entity//(tableName = "folder")
+data class NoteR(
+        @PrimaryKey(autoGenerate = true) val uid: Int,
+        @ColumnInfo(name = "note_name") val noteName: String?,
+        @ColumnInfo(name = "note_contents") val noteContents: String?,
+        @ColumnInfo(name = "folder_id") val folderID: String?,
+        @ColumnInfo(name = "last_edit") val lastEdit: Date?
+)
 
 data class Note (
         var note_id: String? = null,
@@ -64,7 +75,8 @@ class NoteListViewModel() : ViewModel() {
 
     fun selectNote(note: Note) {
 
-        var findNote : Note = Note()
+        var findNote : Note =
+            Note()
         if(note.note_id == null){
             Log.d(TAG, "if(note.note_id == null)")
             if(note.folder_id == null){
